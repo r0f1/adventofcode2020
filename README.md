@@ -4,3 +4,4 @@
 + [Day2](https://github.com/r0f1/adventofcode2020/tree/master/day02)
 + [Day3](https://github.com/r0f1/adventofcode2020/tree/master/day03)
 + [Day4](https://github.com/r0f1/adventofcode2020/tree/master/day04)
++ [Day5](https://github.com/r0f1/adventofcode2020/tree/master/day05)
