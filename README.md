@@ -8,7 +8,7 @@
 |[04](https://adventofcode.com/2020/day/4)|Passport Processing|[py](/day04/main.py)|
 |[05](https://adventofcode.com/2020/day/5)|Binary Boarding|[py](/day05/main.py), [alt](/day05/alt.py)|
 |[06](https://adventofcode.com/2020/day/6)|Custom Customs|[py](/day06/main.py), [alt](/day06/alt.py)|
-|[07](https://adventofcode.com/2020/day/7)|Handy Haversacks|[py](/day07/main.py)|
+|[07](https://adventofcode.com/2020/day/7)|Handy Haversacks|[py](/day07/main.py), [alt](/day07/alt.py)|
 |[08](https://adventofcode.com/2020/day/8)|-|-|
 |[09](https://adventofcode.com/2020/day/9)|-|-|
 |[10](https://adventofcode.com/2020/day/10)|-|-|
