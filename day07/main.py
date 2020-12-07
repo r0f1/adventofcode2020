@@ -18,23 +18,16 @@ for line in lines:
         else:
             d2[color1].append((color2, int(q)))
 
-s = d["shiny gold"]
-res = set()
-while s:
-    c = s.pop()
-    if c in res:
-        continue
-    res.add(c)
-    s.extend(d[c])
-print(len(res))
+def check(color, k):
+    for c in d[color]:
+        k.add(c)
+        check(c, k)
+    return k
+
+print(len(check("shiny gold", set())))
 
 def count(color):
-    bags = d2[color]
-    res = 0
-    for c, n in bags:
-        if n > 0:
-            res += n * count(c)
-    return 1 + res
+    return 1 + sum(n * count(c) for c, n in d2[color] if n > 0)
 
 print(count("shiny gold")-1)
     
