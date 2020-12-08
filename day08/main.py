@@ -1,9 +1,7 @@
+from parse import search
 
-code = []
 with open("input.txt") as f:
-    for x in f:
-        i, n = x.strip().split()
-        code.append((i, int(n)))
+    code = [search("{} {:d}", x).fixed for x in f]
 
 def execute(instrs):
     visited = set()
