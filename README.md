@@ -10,7 +10,7 @@
 |[06](https://adventofcode.com/2020/day/6)|Custom Customs|[py](/day06/main.py), [alt](/day06/alt.py)|
 |[07](https://adventofcode.com/2020/day/7)|Handy Haversacks|[py](/day07/main.py), [alt](/day07/alt.py)|
 |[08](https://adventofcode.com/2020/day/8)|Handheld Halting|[py](/day08/main.py)|
-|[09](https://adventofcode.com/2020/day/9)|-|-|
+|[09](https://adventofcode.com/2020/day/9)|Encoding Error|[py](/day09/main.py)|
 |[10](https://adventofcode.com/2020/day/10)|-|-|
 |[11](https://adventofcode.com/2020/day/11)|-|-|
 |[12](https://adventofcode.com/2020/day/12)|-|-|
