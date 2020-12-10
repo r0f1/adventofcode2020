@@ -11,7 +11,7 @@
 |[07](https://adventofcode.com/2020/day/7)|Handy Haversacks|[py](/day07/main.py), [alt](/day07/alt.py)|
 |[08](https://adventofcode.com/2020/day/8)|Handheld Halting|[py](/day08/main.py)|
 |[09](https://adventofcode.com/2020/day/9)|Encoding Error|[py](/day09/main.py)|
-|[10](https://adventofcode.com/2020/day/10)|-|-|
+|[10](https://adventofcode.com/2020/day/10)|Adapter Array|[py](/day10/main.py)|
 |[11](https://adventofcode.com/2020/day/11)|-|-|
 |[12](https://adventofcode.com/2020/day/12)|-|-|
 |[13](https://adventofcode.com/2020/day/13)|-|-|
