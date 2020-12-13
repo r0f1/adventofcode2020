@@ -7,14 +7,16 @@ with open("input.txt") as f:
 arrival = int(lines[0])
 buses = [(i, int(e)) for i, e in enumerate(lines[1].split(",")) if e.isdigit()]
 
-offsets, times = zip(*buses)
+times = [t for _, t in buses]
 b = [e - (arrival % e) for e in times]
 print(np.min(b) * times[np.argmin(b)])
 
-def chinese_remainder(ns, rems):
-    p = prod(ns)
-    x = sum(r * (p // n) * pow(p // n, -1, n) for r, n in zip(rems, ns))
-    return x % p
+def crt(ns, bs):
+    # Chinese Remainder Theorem
+    # https://brilliant.org/wiki/chinese-remainder-theorem/
+    N = prod(ns)
+    x = sum(b * (N // n) * pow(N // n, -1, n) for b, n in zip(bs, ns))
+    return x % N
 
-rems = [time-offset for offset, time in buses]
-print(chinese_remainder(times, rems))
+offsets = [time-idx for idx, time in buses]
+print(crt(times, offsets))
