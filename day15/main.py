@@ -1,3 +1,6 @@
+# Van Eck's sequence
+# https://oeis.org/A181391
+# https://www.youtube.com/watch?v=etMJxB-igrc
 
 # Part 1: Implemented using list
 
