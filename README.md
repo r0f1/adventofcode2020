@@ -19,7 +19,7 @@
 |[15](https://adventofcode.com/2020/day/15)|Rambunctious Recitation|[py](/day15/main.py), [alt](/day15/alt.py)|
 |[16](https://adventofcode.com/2020/day/16)|Ticket Translation|[py](/day16/main.py), [alt](/day16/alt.py)|
 |[17](https://adventofcode.com/2020/day/17)|Conway Cubes|[py](/day17/main.py)|
-|[18](https://adventofcode.com/2020/day/18)|-|-|
+|[18](https://adventofcode.com/2020/day/18)|Operation Order|[py](/day18/main.py)|
 |[19](https://adventofcode.com/2020/day/19)|-|-|
 |[20](https://adventofcode.com/2020/day/20)|-|-|
 |[21](https://adventofcode.com/2020/day/21)|-|-|
