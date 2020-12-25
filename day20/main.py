@@ -1,14 +1,15 @@
 from collections import namedtuple
-from itertools import product, permutations
+from itertools import product
 
 import numpy as np
-from imgaug.augmenters.flip import fliplr, flipud
+from imgaug.augmenters.flip import fliplr
 from imgaug.augmenters.geometric import Rot90
-from tqdm import tqdm
+from scipy.ndimage import generic_filter
 
-Tile = namedtuple("Tile", "idx ns ts e")
+OrientedTile = namedtuple("OrientedTile", "idx data")
 
-with open("input2.txt") as f:
+ndim = 12
+with open("input.txt") as f:
     parts = f.read().split("\n\n")
 
 tiles = {}
@@ -18,173 +19,97 @@ for p in parts[:-1]:
     a = (np.array(k) == "#").astype(np.uint8)
     tiles[int(p[0].split()[1][:-1])] = a
 
-def transform(tile, rot, lr, ud):
+def transform(tile, rot, lr):
     t = Rot90(rot).augment_image(tile)
     if lr:
         t = fliplr(t)
-    if ud:
-        t = flipud(t)
     return t
 
+def get_all_transforms(arr):
+    return [transform(arr, r, f) for r, f in product([0,1,2,3], [False, True])]
+
 def edge_has_fit(tiles, tile_idx, edge):
-    k = tiles[tile_idx]
-    
-    if   edge == 0: e = k[0]
-    elif edge == 1: e = k[:,-1]
-    elif edge == 2: e = k[-1]
-    elif edge == 3: e = k[:,0]
+    tile_data = tiles[tile_idx]
+
+    if   edge == 0: e = tile_data[0]
+    elif edge == 1: e = tile_data[:,-1]
+    elif edge == 2: e = tile_data[-1]
+    elif edge == 3: e = tile_data[:,0]
 
     for idx, tile in tiles.items():
         if idx == tile_idx: continue
 
-        for trans in product([0,1,2,3], [False, True], [False, True]):
-            t = transform(tile, *trans)
-            for f in [t[0], t[:,-1], t[-1], t[:,0]]:
-                if np.array_equal(f, e):
-                    return idx, trans
-    return None, None
+        for t in get_all_transforms(tile):
+            if np.array_equal(t[0], e):
+                return idx
+    return None
 
-res = []
-# for idx in tqdm(tiles.keys()):
-for idx in tiles.keys():
-    ns, ts = zip(*[edge_has_fit(tiles, idx, i) for i in range(4)])
-    tile = Tile(idx, ns, ts, len([e for e in ns if e is not None]))
-    res.append(tile)
+corners = []
+for tile_idx in tiles:
+    ns = [edge_has_fit(tiles, tile_idx, i) for i in range(4)]
+    if len([e for e in ns if e is not None]) == 2:
+        corners.append(tile_idx)
+    if len(corners) == 4:
+        break
+print(int(np.prod(corners)))
 
-# print(int(np.prod(corners)))
+# Part 2
+def find_neighbor(tiles, tile, direction, seen):
+    if direction == "right":
+        arr = tile.data[:,-1]
+    elif direction == "down":
+        arr = tile.data[-1]
 
-corners = [t for t in res if t.e == 2]
-edges   = [t for t in res if t.e == 3]
-middles = [t for t in res if t.e == 4]
-
-print([(t.idx, t.ns) for t in corners])
-print([(t.idx, t.ns) for t in edges])
-print([(t.idx, t.ns) for t in middles])
-print("\n\n")
-
-nrows = 3
-ncols = 3
-
-def rotate(l, n):
-    return list(l[n:] + l[:n])
-
-def flip_lr(l):
-    return [l[0], l[3], l[2], l[1]]
-
-def flip_ud(l):
-    return [l[2], l[1], l[0], l[3]]
-
-def find_and_pop(elems, n_idx):
-    res = None
-    del_idx = None
-    for i, t in enumerate(elems):
-        if t.idx == n_idx:
-            res = t
-            del_idx = i
-            break
-    else:
-        raise RuntimeError(f"{t.idx} was not found in {elems}.")
-
-    del elems[del_idx]
-    return res
-
-def match(ns, exp):
-    assert len(ns) == len(exp)
-
-    for n, e in zip(ns, exp):
-        if e is None:
-            if n is not None:
-                return False
-        else:
-            if e == 0:
-                continue
-            else:
-                if n != e:
-                    return False
-    return True
-
-def place(tile, exp):
-    if tile.idx == 1171:
-        print("orig")
-        print(tile.ns)
-
-    n = tile.ns
-    t = tile.ts
-    for trans in product([0,1,2,3], [False, True], [False, True]):
-        n = rotate(n, trans[0])
-        t = rotate(t, trans[0])
-        if trans[1]:
-            n = flip_lr(n)
-            t = flip_lr(t)
-        if trans[2]:
-            n = flip_ud(n)
-            t = flip_ud(t)
-
-        if tile.idx == 1171:
-            print(trans[0], "lr?", trans[1], "ud?", trans[2], end=" ")
-            print(n, exp)
-        if match(n, exp):
-            return Tile(tile.idx, n, t, tile.e)
-    
-    raise RuntimeError(tile)
-
-def print_short(l):
-    print([(t.idx, t.ns) for t in l])
-
-layout = []
-
-for idx_row in range(nrows):
-    if idx_row == 0:
-        tile = corners.pop()
-        tile = place(tile, [None, 0, 0, None])
-        row = [tile]
-    elif idx_row == nrows-1:
-        tile = find_and_pop(corners, layout[idx_row-1][0].ns[2])
-        upper = layout[idx_row-1][0].idx
-        tile = place(tile, [upper, 0, None, None])
-        row = [tile]
-    else:
-        row = [find_and_pop(edges, layout[idx_row-1][0])]
-
-    for idx_col in range(1, ncols):
-        prev_tile = row[-1]
-        n_idx = prev_tile.ns[1]
+    for t_idx, t_data in tiles.items():
+        if t_idx == tile.idx: continue
+        if t_idx in seen: continue
         
-        print_short(row)
-        print(idx_col, n_idx)
+        for data in get_all_transforms(t_data):
+            if   direction == "right" and np.array_equal(arr, data[:,0]):
+                return OrientedTile(t_idx, data)
+            elif direction == "down"  and np.array_equal(arr, data[0]):
+                return OrientedTile(t_idx, data)
 
-        if idx_row in (0, nrows-1):
-            if idx_col == ncols-1:
-                elems = corners
-            else:
-                elems = edges
-        else:
-            if idx_col == ncols-1:
-                elems = edges
-            else:
-                elem = middles
+    raise Exception()
 
-        t = find_and_pop(elems, n_idx)
+corner_idx = corners[0]
+for corner_data in get_all_transforms(tiles[corner_idx]):
+    try:
+        seen = set()
+        display = [[] for _ in range(ndim)]
+        display[0].append(OrientedTile(corner_idx, corner_data))
+        seen.add(corners[0])
 
-        if idx_row == 0:
-            upper = None
-        else:
-            upper = layout[idx_row-1][0].idx
+        for idx_row in range(ndim):
+            row = display[idx_row]
+            while len(row) < ndim:
+                n = find_neighbor(tiles, row[-1], "right", seen)
+                row.append(n)
+                seen.add(n.idx)
 
-        left = prev_tile.idx
+            if idx_row < ndim-1:
+                n = find_neighbor(tiles, row[0], "down", seen)
+                display[idx_row+1].append(n)
+                seen.add(n.idx)
+    except:
+        continue
+    break
 
-        if idx_col == ncols-1:
-            if idx_row == 0:
-                row.append(place(t, [None, None, 0, left]))
+display2 = np.concatenate([np.concatenate([t.data[1:-1, 1:-1] for t in row], axis=1) for row in display])
 
-            elif idx_row == nrows-1:
-                row.append(place(t, [0, None, None, left]))
+nessi = np.array([list("                  # "), 
+                  list("#    ##    ##    ###"),
+                  list(" #  #  #  #  #  #   ")])
+nessi = (nessi == "#").astype(np.uint8)
 
-            else:
-                row.append(place(t, [upper, None, 0, left]))
-        else:
-            row.append(place(t, [upper, 0, 0, left]))
+def f(part):
+    part = np.reshape(part, nessi.shape)
+    for y, row in enumerate(part):
+        for x, pix in enumerate(row):
+            if nessi[y][x] == 1 and pix == 0:
+                return 0
+    return 1
 
-    layout.append(row)
-
-print(layout)
+found = max([np.sum(generic_filter(img, f, nessi.shape, mode="constant", cval=0)) for img in get_all_transforms(display2)])
+roughness = int(np.count_nonzero(display2) - found*np.sum(nessi))
+print(roughness)
