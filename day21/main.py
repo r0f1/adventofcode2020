@@ -24,6 +24,7 @@ reduced = [set.intersection(*ps) for ps in poss]
 remaining_foods = sorted(set(flatten(reduced)))
 count = len([f for f in flatten(foods) if f not in remaining_foods])
 print(count)
+
 poss_mat = np.array([[1 if r in red else 0 for r in remaining_foods] for red in reduced])
 
 change = True
