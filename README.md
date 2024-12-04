@@ -1,6 +1,6 @@
 # Advent of Code 2020
 
-|Day|Name|Solution|
+| Day | Name | Solution |
 |---|---|---|
 |[01](https://adventofcode.com/2020/day/1)|Report Repair|[py](/day01/main.py), [alt](/day01/alt.py)|
 |[02](https://adventofcode.com/2020/day/2)|Password Philosophy|[py](/day02/main.py)|
